@@ -118,6 +118,15 @@ public class Field extends JPanel {
             }
         }
     }
+    
+    private void drawTowerRange(Graphics g){
+        for (Tile[] tA : tiles) {
+            for (Tile t : tA) {                    
+                t.drawTowerRange(g);
+            }
+        }
+    }
+    
     int count = 0;
 
     private void drawCreeps(Graphics g) {
@@ -186,6 +195,9 @@ public class Field extends JPanel {
         super.paintComponent(g);
         drawTiles(g);
         drawCreeps(g);
+        if(Game.debug){
+            drawTowerRange(g);
+        }
         drawOverlappingContent(g);
         nextRound();
     }

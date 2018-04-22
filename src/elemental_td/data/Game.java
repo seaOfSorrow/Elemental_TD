@@ -32,15 +32,16 @@ public class Game extends JFrame implements ActionListener {
     private final int TIMERDELAY = 1000, TIMERDELAY_MULITPLIKATOR = 60;
     private final Timer timer1 = new Timer(TIMERDELAY / TIMERDELAY_MULITPLIKATOR, this);
     private final int WIDTH = 800, HEIGHT = 550;
-    public static Field field;
-    public static Shop shop;
-    private PauseScreen pauseScreen;
-    public static Point mouse = new Point(0, 0);
     private boolean pause = false;
+    private PauseScreen pauseScreen;
+    
+    public static Field field;
+    public static Shop shop;    
+    public static Point mouse = new Point(0, 0);
     public static int gameTimeSec = 0, gameTimeMin = 0;
     public static int pauseTimeSec = 0, pauseTimeMin = 0;
     public static int round = 0;
-    public static boolean start = false;
+    public static boolean start = false, debug = false;
 
     public Game() {
         initGame();
@@ -50,21 +51,27 @@ public class Game extends JFrame implements ActionListener {
         field = new Field();
         shop = new Shop();
         pauseScreen = new PauseScreen(WIDTH, HEIGHT);
-        this.add(shop);
-        this.add(field);
         shop.setBounds(new Rectangle(new Point(0, 400), new Dimension(800, 150)));
+        
+        this.add(shop);
+        this.add(field);        
         this.revalidate();
+        
         this.setTitle("Elemental Tower Defense by Pascal Musiolik");
         this.setIconImage(new ImageIcon(Game.class.getClass().getResource("/elemental_td/data/res/icon.png")).getImage());
+        
         this.addMouseListener(new MAdapter());
         this.addMouseMotionListener(new MAdapter());
         this.addKeyListener(new TAdapter());
+        
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        
         this.setMaximumSize(new Dimension(WIDTH, HEIGHT));
         this.setMinimumSize(new Dimension(WIDTH, HEIGHT));
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.setUndecorated(true);
-        this.setLocationRelativeTo(null);
+        this.setLocationRelativeTo(null);        
+        
         timer1.start();
     }
 
@@ -127,9 +134,14 @@ public class Game extends JFrame implements ActionListener {
                     if (JOptionPane.showConfirmDialog(rootPane, "Wollen Sie einen alten Spielstand laden?", "Laden", JOptionPane.YES_NO_OPTION) == 0) {
                         field.loadField(elemental_td.helper.FieldLoader.getSaveState());
                         pressed.removeAll(pressed);
+                        return;
                     } else {
                         pressed.removeAll(pressed);
+                        return;
                     }
+                }
+                if(pressed.contains(KeyEvent.VK_ALT) && pressed.contains(KeyEvent.VK_CONTROL) && pressed.contains(KeyEvent.VK_D)){
+                    debug=!debug;
                 }
             } else if (pressed.contains(KeyEvent.VK_P)) {
                 pause = !pause;

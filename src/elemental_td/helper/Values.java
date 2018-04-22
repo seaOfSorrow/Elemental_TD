@@ -13,6 +13,7 @@ public final class Values {
     public static final int enemyHp=100,ancientHp=500,startCoins=100;
     public final static int[] enemyHpMultiplierer={1,2,5,10};
     public final static int[] enemyAncientDamage={1,5,10,50};
+    public final static int[] towerRange={0,0,150,175,250,450,0};
     public static int currentHp=ancientHp;
     public static int currentCoins=startCoins;
     
