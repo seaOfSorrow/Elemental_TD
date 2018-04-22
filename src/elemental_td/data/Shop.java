@@ -5,6 +5,7 @@
  */
 package elemental_td.data;
 
+import elemental_td.helper.Tile;
 import elemental_td.helper.Values;
 import java.awt.Color;
 import java.awt.Font;
@@ -32,6 +33,7 @@ public class Shop extends JPanel {
     private int[] shopContent = {Values.aTiles.tower_b.ordinal(), Values.aTiles.tower_m.ordinal(), Values.aTiles.tower_l.ordinal(), Values.aTiles.tower_a.ordinal(), 0, 0, 0, Values.aTiles.trash.ordinal()};
     private int[] shopPrice = {10,20,50,100,0,0,0,0};
     private int holdItemID;
+    private int holdItemPos;
     private boolean holdsItem;
 
     public Shop() {
@@ -71,8 +73,27 @@ public class Shop extends JPanel {
                             if(shopContent[i]!=Values.aTiles.air.ordinal()){
                             holdsItem=true;
                             holdItemID=shopContent[i];
+                            holdItemPos=i;
                             }
                         }
+                    }
+                }
+            }
+            if(holdsItem){
+                if(Game.mouse.y-400 < 0){
+                    if(0<(Values.currentCoins-shopPrice[holdItemPos])){
+                        Tile[][] tiles=Game.field.getTiles();
+                        for(int y=0;y<tiles.length;y++){
+                            for(int x=0;x<tiles[y].length;x++){                               
+                                if(tiles[y][x].getAirType()==Values.aTiles.air.ordinal() && tiles[y][x].contains(Game.mouse) && tiles[y][x].isUsable()){
+                                    Game.field.changeAirTile(x, y, holdItemID);
+                                    Values.currentCoins-=shopPrice[holdItemPos];
+                                    holdsItem=false;                                    
+                                }
+                            }
+                        }
+                    }else{
+                        holdsItem=false;
                     }
                 }
             }
@@ -93,9 +114,13 @@ public class Shop extends JPanel {
         }
     }
 
+    public boolean isHoldingItem(){
+        return holdsItem;
+    }
+    
     private void drawItemOnMouse(Graphics g){
         if(Game.mouse.y-400 < 0){
-            Game.field.isOverlap(Game.mouse.x, Game.mouse.y, holdItemID);
+            Game.field.isOverlap(holdItemID);
         }else{
             Game.field.isNotOverlap();
             g.drawImage(Game.field.getAirTile(holdItemID), Game.mouse.x, Game.mouse.y-400, this);
@@ -133,7 +158,7 @@ public class Shop extends JPanel {
         for (int i = 0; i < shopTiles.length; i++) {
             g.setColor(Color.BLACK);
             g.drawRect(shopTiles[i].x, shopTiles[i].y - 400, shopTiles[i].width, shopTiles[i].height);
-            g.drawImage(Game.field.getAirTile(shopContent[i]), shopTiles[i].x, shopTiles[i].y, 50, 50, this);
+            g.drawImage(Game.field.getAirTile(shopContent[i]), shopTiles[i].x, shopTiles[i].y-400, 50, 50, this);
             if(1<shopPrice[i]){
                 g.setColor(Color.white);
                 g.drawString("$"+shopPrice[i], shopTiles[i].x+10, shopTiles[i].y+15-400);

@@ -30,7 +30,7 @@ public class Field extends JPanel {
     private final Image[] creepTiles = ImageLoader.getCreepTiles();
     private ArrayList<Creep> creeps;
     private boolean shopOverlap;
-    private int sIX, sIY, sIID;
+    private int sIID;
 
     public Field() {
         initField();
@@ -135,18 +135,26 @@ public class Field extends JPanel {
         }
     }
     
-    public void isOverlap(int x,int y,int id){
+    private void drawOverlappingContent(Graphics g){
+        if(shopOverlap && Game.shop.isHoldingItem()){
+            g.drawImage(airTiles[sIID], Game.mouse.x, Game.mouse.y, 50, 50, this);
+        }else{
+            shopOverlap=false;
+        }
+    }
+    
+    public void isOverlap(int id){
         shopOverlap=true;
-        sIX=x;
-        sIY=y;
         sIID=id;
     }
 
     public void isNotOverlap(){
         shopOverlap=false;
-        sIX=-1;
-        sIY=-1;
         sIID=-1;
+    }
+    
+    public void changeAirTile(int x, int y, int id){
+        tiles[y][x].setAirType(id);
     }
     
     public int[][][] getCurrentField() {
@@ -178,6 +186,7 @@ public class Field extends JPanel {
         super.paintComponent(g);
         drawTiles(g);
         drawCreeps(g);
+        drawOverlappingContent(g);
         nextRound();
     }
 
