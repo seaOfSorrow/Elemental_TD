@@ -6,6 +6,7 @@
 package elemental_td.data;
 
 import elemental_td.helper.Values;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
@@ -137,9 +138,13 @@ public class Creep extends Rectangle {
                         defeated=true;
                         inGame=false;
                     }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+                    if(hp<=0){
+                        defeated=true;
+                        inGame=false;
+                        int extraCoins=(int) (Math.random()*20*(creeptype+1));
+                        Values.currentCoins+=extraCoins;
+                    }
+                } catch (Exception ex) {}
             }
             iR = false;
             iU = false;
@@ -151,13 +156,22 @@ public class Creep extends Rectangle {
         }
     }
 
+    public void getDamage(int dmg){
+        hp-=dmg;
+    }
+    
     public boolean isDefeated() {
         return defeated;
     }
 
     public void drawCreep(Graphics g) {
-        if (inGame) {
+        if (inGame) {            
             g.drawImage(Game.field.getCreepTile(creeptype), x, y, 50, 50, null);
+            g.setColor(new Color(0f, 0f, 0f, 0.5f));
+            g.drawRect(x, y+35, 50, 10);
+            g.setColor(new Color(1f, 0f, 0f, 0.5f));            
+            int maxhp=Values.enemyHp * Values.enemyHpMultiplierer[this.creeptype];
+            g.fillRect(x, y+35, 50*hp/maxhp, 10);
         }
     }
 }

@@ -81,7 +81,7 @@ public class Shop extends JPanel {
             }
             if(holdsItem){
                 if(Game.mouse.y-400 < 0){
-                    if(0<(Values.currentCoins-shopPrice[holdItemPos])){
+                    if(-1<(Values.currentCoins-shopPrice[holdItemPos])){
                         Tile[][] tiles=Game.field.getTiles();
                         for(int y=0;y<tiles.length;y++){
                             for(int x=0;x<tiles[y].length;x++){                               
@@ -144,12 +144,17 @@ public class Shop extends JPanel {
         g.setFont(new Font("Courier New", Font.BOLD, 14));
         g.drawString("Round: " + Integer.toString(elemental_td.data.Game.round), 0, 130);
     }
+    
+    private void drawVictoryCondition(Graphics g){
+        g.drawString("Zielrunde: "+ Game.victoryCondition, 300, 150);
+    }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.setFont(new Font("Courier New", Font.BOLD, 20));
         g.setColor(Color.WHITE);
+        drawVictoryCondition(g);
         drawRound_hp_coins(g);
         drawTime(g);
         if(holdsItem){            

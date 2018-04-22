@@ -13,6 +13,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.util.ArrayList;
+import java.util.Random;
 import javax.swing.JPanel;
 
 /**
@@ -28,7 +29,7 @@ public class Field extends JPanel {
     private final Image[] groundTiles = ImageLoader.getGroundTiles();
     private final Image[] airTiles = ImageLoader.getAirTiles();
     private final Image[] creepTiles = ImageLoader.getCreepTiles();
-    private ArrayList<Creep> creeps;
+    public ArrayList<Creep> creeps;
     private boolean shopOverlap;
     private int sIID;
 
@@ -63,10 +64,16 @@ public class Field extends JPanel {
         return returnVal;
     }
 
+    int randombound=1;
+    
     private void createCreeps() {
-        for (int i = 0; i < 5 * Game.round; i++) {
+        for (int i = 0; i < 3 * Game.round; i++) {
             try {
-                creeps.add(new Creep(0));
+                if(Game.round%5==0 && randombound<=3){
+                    randombound++;
+                }
+                Random r=new Random();
+                creeps.add(new Creep(r.nextInt(randombound)));
             } catch (Exception ex) {
             }
         }
@@ -106,7 +113,7 @@ public class Field extends JPanel {
         for (Tile[] tA : tiles) {
             for (Tile t : tA) {
                 g.drawImage(groundTiles[t.getGroundType()], t.x, t.y, t.getWIDTH(), t.getHEIGHT(), this);
-                g.drawImage(airTiles[t.getAirType()], t.x, t.y, t.getWIDTH(), t.getHEIGHT(), this);
+                g.drawImage(airTiles[t.getAirType()], t.x, t.y, t.getWIDTH(), t.getHEIGHT(), this);                
                 if (t.contains(Game.mouse)) {
                     if (t.isUsable()) {
                         g.setColor(new Color(1f, 1f, 1f, 0.4f));
@@ -118,13 +125,22 @@ public class Field extends JPanel {
             }
         }
     }
-    
-    private void drawTowerRange(Graphics g){
+
+    private void drawTowerRange(Graphics g) {
         for (Tile[] tA : tiles) {
-            for (Tile t : tA) {                    
+            for (Tile t : tA) {
                 t.drawTowerRange(g);
             }
         }
+    }
+
+    private void doPhysic(Graphics g){
+        for (Tile[] tA : tiles) {
+            for (Tile t : tA) {
+                t.physic();
+                t.drawPhysic(g);
+            }
+        }            
     }
     
     int count = 0;
@@ -135,7 +151,7 @@ public class Field extends JPanel {
                 if (c.ingame()) {
                     c.drawCreep(g);
                     c.physic();
-                } else if (count >= 120 / Game.round * 1.5 && !c.isDefeated()) {
+                } else if (count >= 120 / Game.round * 3 && !c.isDefeated()) {
                     c.spawn();
                     count = 0;
                 }
@@ -143,29 +159,29 @@ public class Field extends JPanel {
             count++;
         }
     }
-    
-    private void drawOverlappingContent(Graphics g){
-        if(shopOverlap && Game.shop.isHoldingItem()){
+
+    private void drawOverlappingContent(Graphics g) {
+        if (shopOverlap && Game.shop.isHoldingItem()) {
             g.drawImage(airTiles[sIID], Game.mouse.x, Game.mouse.y, 50, 50, this);
-        }else{
-            shopOverlap=false;
+        } else {
+            shopOverlap = false;
         }
     }
-    
-    public void isOverlap(int id){
-        shopOverlap=true;
-        sIID=id;
+
+    public void isOverlap(int id) {
+        shopOverlap = true;
+        sIID = id;
     }
 
-    public void isNotOverlap(){
-        shopOverlap=false;
-        sIID=-1;
+    public void isNotOverlap() {
+        shopOverlap = false;
+        sIID = -1;
     }
-    
-    public void changeAirTile(int x, int y, int id){
+
+    public void changeAirTile(int x, int y, int id) {
         tiles[y][x].setAirType(id);
     }
-    
+
     public int[][][] getCurrentField() {
         int[][][] returnVal = new int[2][8][16];
         for (int y = 0; y < returnVal[0].length; y++) {
@@ -195,9 +211,10 @@ public class Field extends JPanel {
         super.paintComponent(g);
         drawTiles(g);
         drawCreeps(g);
-        if(Game.debug){
+        if (Game.debug) {
             drawTowerRange(g);
         }
+        doPhysic(g);
         drawOverlappingContent(g);
         nextRound();
     }
